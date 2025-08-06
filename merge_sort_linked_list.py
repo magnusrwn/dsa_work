@@ -91,8 +91,9 @@ class LinkedList:
                 current = current.next_node
             elif current.next_node == None:
                 nodes.append("[Tail %s]"%current.data)
+                current = current.next_node
             else:
-                nodes.append(current.data)
+                nodes.append("[%s]"%current.data)
                 current = current.next_node
         return "->".join(nodes)
 
@@ -100,7 +101,7 @@ class LinkedList:
 def merge_sort(linked_list):
     if linked_list.size() == 1:
         return linked_list
-    elif linked_list.head() is None:
+    elif linked_list.head is None:
         return linked_list
     
     lefth, righth = split(linked_list)
@@ -113,26 +114,25 @@ def merge_sort(linked_list):
     return merged_linked_list
 
 def split(l):
-    if l is None or l.head() is None:
+    if l is None or l.head is None:
         left = l
         right = None
         return left, right
-
-    # getting the size
-    s = l.size()
-    # finding mp...
-    mp = s // 2
-    # subtract one, as size returns +1 (as its not indexes, it is len)
-    mp_node = l.node_at_index(mp -1)
-    
-    # gving the left hand list the val of the whole linked list
-    left = l
-    # creating a new linked list obj
-    right = LinkedList()
-    # setting the beggining of that linked list as the head (mp) of the older list
-    right.head = mp_node.next_node
-    # deleting the connection/ reference of the next node from the right, as it is the head... splittin git into 2 seperate lists without connection
-    mp_node.next_node = None
+    else:
+        # getting the size
+        s = l.size()
+        # finding mp...
+        mp = s // 2
+        # subtract one, as size returns +1 (as its not indexes, it is len)
+        mp_node = l.node_at_index(mp -1)
+        
+        # gving the left hand list the val of the whole linked list
+        left = l
+        right = LinkedList()
+        # setting the beggining of that linked list as the head (mp) of the older list
+        right.head = mp_node.next_node
+        # deleting the connection/ reference of the next node from the right, as it is the head... splittin git into 2 seperate lists without connection
+        mp_node.next_node = None
 
     return left, right
 
@@ -143,11 +143,11 @@ def merge(l, r):
     Returns new (sorted) linked list
     """
     # output list
-    new_l = LinkedList()
+    merged = LinkedList()
     # assign a temporary fake head that is disgaurded later
-    new_l.add(0)
+    merged.add(0)
 
-    current = new_l.head
+    current = merged.head
 
     # obtain other heads...
     l_head = l.head
@@ -155,15 +155,41 @@ def merge(l, r):
 
     # itteration over l/ r until tail
     while l_head or r_head:
-        if l_head.data < r_head.data:
+        if l_head is None:
+            current.next_node = r_head
+            # call next on right as then loop condition will be false...
+            r_head = r_head.next_node
+        elif r_head is None:
             current.next_node = l_head
+            # again... moving it past the last node, to make loop condition false
             l_head = l_head.next_node
         else:
-            current.next_node = r_head
-            r_head = r_head.next_node
-    current.next_node
+            l_data = l_head.data
+            r_data = r_head.data
+            if l_data < r_data:
+                current.next_node = l_head
+                l_head = l_head.next_node
+            else:
+                current.next_node = r_head
+                r_head = r_head.next_node
+        current = current.next_node
+    head = merged.head.next_node
+    merged.head = head
 
-    head = new_l.head.next_node
-    new_l.head = head
+    return merged
 
-    return new_l
+linked_li = LinkedList()
+linked_li.add(3)
+linked_li.add(2)
+linked_li.add(1)
+linked_li.add(112)
+linked_li.add(890)
+linked_li.add(445678)
+linked_li.add(4332)
+linked_li.add(655)
+linked_li.add(435)
+linked_li.add(22)
+
+print(linked_li)
+merged = merge_sort(linked_li)
+print(merged)
